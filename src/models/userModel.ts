@@ -23,3 +23,23 @@ export function createUser(user: User) {
     resolve(newUser);
   });
 }
+
+export function updateUser(id: string, user: User) {
+  return new Promise<User>((resolve) => {
+    const index = users.findIndex((obj) => obj.id === id);
+    users[index] = { id, ...user };
+    resolve(users[index]);
+  });
+}
+
+export function deleteUserById(id: string) {
+  return new Promise<boolean>((resolve) => {
+    const index = users.findIndex((obj) => obj.id === id);
+    if (index > -1) {
+      users.splice(index, 1);
+      resolve(true);
+    } else {
+      resolve(false);
+    }
+  });
+}

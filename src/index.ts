@@ -1,17 +1,11 @@
 import 'dotenv/config';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { validate, version } from 'uuid';
-import { getUsers, getUser, addUser } from './controllers/userController.js';
+import {
+  getUsers, getUser, addUser, editUser, deleteUser,
+} from './controllers/userController.js';
 
 const message = 'Hello crud api!';
-const users = [
-  {
-    id: '1',
-    username: 'testUser',
-    age: '33',
-    hobbies: ['dance', 'chess'],
-  },
-];
 
 console.log(message);
 
@@ -68,7 +62,23 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         if (urlArgs.length === 3) {
           const userId = urlArgs[2];
           console.log(`> update user id ${userId}`);
-          result = users;
+          if (validate(userId) && version(userId) === 4) {
+            try {
+              result = await editUser(userId, req);
+              if (result) {
+                statusCode = 200;
+              } else {
+                result = { code: 404, errorMessage: 'User Not Found' };
+                statusCode = 404;
+              }
+            } catch (error) {
+              result = { code: 400, errorMessage: 'Request body does not contain required fields' };
+              statusCode = 400;
+            }
+          } else {
+            result = { code: 400, errorMessage: 'UserId is invalid' };
+            statusCode = 400;
+          }
         } else {
           result = { code: 404, errorMessage: 'Page Not Found' };
           statusCode = 404;
@@ -79,7 +89,18 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
         if (urlArgs.length === 3) {
           const userId = urlArgs[2];
           console.log(`> delete user id ${userId}`);
-          result = users;
+          if (validate(userId) && version(userId) === 4) {
+            const userDeleted = await deleteUser(userId);
+            if (userDeleted) {
+              statusCode = 204;
+            } else {
+              result = { code: 404, errorMessage: 'User Not Found' };
+              statusCode = 404;
+            }
+          } else {
+            result = { code: 400, errorMessage: 'UserId is invalid' };
+            statusCode = 400;
+          }
         } else {
           result = { code: 404, errorMessage: 'Page Not Found' };
           statusCode = 404;
