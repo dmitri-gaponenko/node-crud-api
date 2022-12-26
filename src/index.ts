@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
+import { validate, version } from 'uuid';
+import { getUsers, getUser, addUser } from './controllers/userController.js';
 
 const message = 'Hello crud api!';
 const users = [
@@ -15,7 +17,7 @@ console.log(message);
 
 const PORT = process.env.PORT || 4000;
 
-const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+const server = createServer(async (req: IncomingMessage, res: ServerResponse) => {
   console.log(`req.url: ${req.url}, ${req.method}\n`);
 
   const urlArgs = req.url?.split('/').filter(Boolean) || [];
@@ -27,17 +29,35 @@ const server = createServer((req: IncomingMessage, res: ServerResponse) => {
       case 'GET':
         if (urlArgs.length === 2) {
           console.log('> find all users');
+          result = await getUsers();
         } else {
           const userId = urlArgs[2];
           console.log(`> find user by id ${userId}`);
+          if (validate(userId) && version(userId) === 4) {
+            const user = await getUser(userId);
+            if (user) {
+              result = user;
+            } else {
+              result = { code: 404, errorMessage: 'User Not Found' };
+              statusCode = 404;
+            }
+          } else {
+            result = { code: 400, errorMessage: 'UserId is invalid' };
+            statusCode = 400;
+          }
         }
-        result = users;
         break;
 
       case 'POST':
         if (urlArgs.length === 2) {
           console.log('> create user');
-          result = users;
+          try {
+            result = await addUser(req);
+            statusCode = 201;
+          } catch (error) {
+            result = { code: 400, errorMessage: 'Request body does not contain required fields' };
+            statusCode = 400;
+          }
         } else {
           result = { code: 404, errorMessage: 'Page Not Found' };
           statusCode = 404;
