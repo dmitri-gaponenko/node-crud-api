@@ -3,7 +3,7 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 import { validate, version } from 'uuid';
 import {
   getUsers, getUser, addUser, editUser, deleteUser,
-} from './controllers/userController.js';
+} from './controllers/userController';
 
 const message = 'Hello crud api!';
 
@@ -125,3 +125,5 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 server.listen(PORT, () => {
   console.log(`Server is listening on http://localhost:${PORT}/`);
 });
+
+export default server;
