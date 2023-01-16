@@ -42,6 +42,10 @@ export async function addUser(req: IncomingMessage): Promise<User> {
     throw new Error('Request body does not contain required fields');
   }
 
+  if (typeof body.username !== 'string' || typeof body.age !== 'number' || !Array.isArray(body.hobbies)) {
+    throw new Error('Data type is incorrect');
+  }
+
   const user = await createUser(body);
 
   return user;

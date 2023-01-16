@@ -11,11 +11,11 @@ interface Storage {
 
 export const storage: Storage = {
   users: [
-    {
-      id: 'f884c946-9238-4fab-883f-2cf68ef224d9',
-      username: 'testUser',
-      age: 18,
-      hobbies: ['dance', 'chess'],
-    },
+    // {
+    //   id: 'f884c946-9238-4fab-883f-2cf68ef224d9',
+    //   username: 'testUser',
+    //   age: 18,
+    //   hobbies: ['dance', 'chess'],
+    // },
   ],
 };
